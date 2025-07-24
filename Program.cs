@@ -10,6 +10,13 @@ unsafe
 {
     Console.WriteLine($"Heap size: {Emscripten.emscripten_get_heap_size()}");
     Console.WriteLine($"SBRK ptr : {*(uint*)Emscripten.emscripten_get_sbrk_ptr()}");
+    Console.WriteLine($"Page size: {Mono.mono_pagesize()}");
+}
+
+public static unsafe class Mono
+{
+    [DllImport("*")]
+    public static unsafe extern IntPtr mono_pagesize();
 }
 
 public static unsafe class Emscripten
@@ -172,9 +179,18 @@ public static partial class Benchmarks
         var gen1 = GC.CollectionCount(1);
         var gen2 = GC.CollectionCount(2);
         var gcInfo = GC.GetGCMemoryInfo();
-        var s = $"{prefix} | TM {FormatBytes(total)} | G0 {gen0} | G1 {gen1} | G2 {gen2} | HeapSizeBytes {FormatBytes(gcInfo.HeapSizeBytes)} | FragmentedBytes {FormatBytes(gcInfo.FragmentedBytes)} | TotalCommittedBytes {FormatBytes(gcInfo.TotalCommittedBytes)}";
 
-        Console.WriteLine(s);
+        var sb = new StringBuilder();
+        sb.Append($"{prefix} | ");
+        sb.Append($"Total Memory: {FormatBytes(total)} | ");
+        sb.Append($"HeapSizeBytes: {FormatBytes(gcInfo.HeapSizeBytes)} | ");
+        sb.Append($"FragmentedBytes: {FormatBytes(gcInfo.FragmentedBytes)} | ");
+        sb.Append($"TotalCommittedBytes: {FormatBytes(gcInfo.TotalCommittedBytes)} | ");
+        sb.Append($"G0: {gen0} | ");
+        sb.Append($"G1: {gen1} | ");
+        sb.Append($"G2: {gen2} | ");
+   
+        Console.WriteLine(sb.ToString());
     }
 
     private static string FormatBytes(long bytes)
