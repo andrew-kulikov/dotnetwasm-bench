@@ -1,0 +1,8 @@
+<linker>
+  <assembly fullname="Autofac">
+    <type fullname="*" />
+  </assembly>
+  <assembly fullname="memtest">
+    <type fullname="*" />
+  </assembly>
+</linker>

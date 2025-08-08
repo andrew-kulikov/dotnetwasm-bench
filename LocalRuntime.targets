@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <RuntimeSrcDir>C:\work\public_repos\runtime</RuntimeSrcDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RuntimeConfig>Release</RuntimeConfig>
+    <TasksConfiguration>Release</TasksConfiguration>
+    <_TargetsBaseName>BrowserWasmApp</_TargetsBaseName>
+    <_WasmTargetsDir>$(RuntimeSrcDir)\src\mono\browser\build\</_WasmTargetsDir>
+    <_WasmSharedDir>$(RuntimeSrcDir)\src\mono\wasm\build\</_WasmSharedDir>
+    <WasmCommonTargetsPath>$(RuntimeSrcDir)\src\mono\wasm\build\</WasmCommonTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(RuntimeSrcDir)\src\mono\wasm\build\WasmApp.LocalBuild.props" />
+  <Import Project="$(RuntimeSrcDir)\src\mono\wasm\build\WasmApp.LocalBuild.targets" />
+  <Target Name="UpdateRuntimePack" AfterTargets="ResolveFrameworkReferences">
+    <ItemGroup>
+      <ResolvedRuntimePack PackageDirectory="$(RuntimeSrcDir)\artifacts\bin\microsoft.netcore.app.runtime.browser-wasm\Release" Condition="'%(ResolvedRuntimePack.FrameworkName)' == 'Microsoft.NETCore.App'" />
+    </ItemGroup>
+  </Target>
+</Project>

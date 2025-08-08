@@ -17,9 +17,6 @@
     <WasmNativeStrip>false</WasmNativeStrip>
     <EmccFlags>$(EmccFlags); --memoryprofiler -s MALLOC=dlmalloc</EmccFlags>
   </PropertyGroup>
-  <ItemGroup>
-    <WasmEnvironmentVariable Include="MONO_GC_DEBUG" Value="2" />
-  </ItemGroup>
 
   <PropertyGroup Condition="'$(aot)' == 'true'">
     <WasmNativeStrip>false</WasmNativeStrip>
@@ -33,6 +30,9 @@
     <EmccLinkOptimizationFlag>-O3</EmccLinkOptimizationFlag>
     <WasmBitcodeCompileOptimizationFlag>-O3</WasmBitcodeCompileOptimizationFlag>
   </PropertyGroup>
+  <ItemGroup Condition="'$(aot)' == 'true'">
+    <TrimmerRootDescriptor Include="LinkDescription.xml" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(aot)' != 'true'">
     <WasmNativeStrip>false</WasmNativeStrip>
     <DebugType>none</DebugType>
@@ -50,12 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-<!-- 
-  <Target Name="UpdateRuntimePack" AfterTargets="ResolveFrameworkReferences">
-    <ItemGroup>
-      <ResolvedRuntimePack PackageDirectory="D:\repos\runtime\artifacts\bin\microsoft.netcore.app.runtime.browser-wasm\Release" Condition="'%(ResolvedRuntimePack.FrameworkName)' == 'Microsoft.NETCore.App'" />
-    </ItemGroup>
-  </Target> -->
+
+  <Import Project="LocalRuntime.targets" Condition="'$(local)' == 'true'" />
 </Project>

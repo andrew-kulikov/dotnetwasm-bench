@@ -32,12 +32,77 @@
     </div>
     <div>
         <label for="losFragmentationCount">Count</label>
-        <input type="number" id="losFragmentationCount" value="10" />
+        <input type="number" id="losFragmentationCount" value="100" />
         <label for="losFragmentationBatchSize">Batch size</label>
-        <input type="number" id="losFragmentationBatchSize" value="1000" />
+        <input type="number" id="losFragmentationBatchSize" value="100" />
         <label for="losFragmentationSize">Size</label>
         <input type="number" id="losFragmentationSize" value="8192" />
         <button id="losFragmentationButton">Los fragmentation</button>
+    </div>
+    <div>
+        <label for="largeJsonAsStringCount">Count</label>
+        <input type="number" id="largeJsonAsStringCount" value="100" />
+        <label for="largeJsonAsStringSizeMb">Size Mb</label>
+        <input type="number" id="largeJsonAsStringSizeMb" value="1" />
+        <label for="largeJsonAsStringDoGc">Do GC</label>
+        <input type="checkbox" id="largeJsonAsStringDoGc" checked />
+        <button id="largeJsonAsStringButton">Large JSON as string</button>
+    </div>
+    <div>
+        <label for="genericClassesCount">Count</label>
+        <input type="number" id="genericClassesCount" value="100" />
+        <label for="genericClassesDoGc">Do GC</label>
+        <input type="checkbox" id="genericClassesDoGc" checked />
+        <button id="genericClassesButton">Generic classes</button>
+    </div>
+    <div>
+        <label for="genericClassesLevel2Count">Count</label>
+        <input type="number" id="genericClassesLevel2Count" value="100" />
+        <label for="genericClassesLevel2DoGc">Do GC</label>
+        <input type="checkbox" id="genericClassesLevel2DoGc" checked />
+        <button id="genericClassesLevel2Button">Generic classes level 2</button>
+    </div>
+    <div>
+        <label for="exceptionsCount">Count</label>
+        <input type="number" id="exceptionsCount" value="100" />
+        <label for="exceptionsDoGc">Do GC</label>
+        <input type="checkbox" id="exceptionsDoGc" checked />
+        <button id="exceptionsButton">Exceptions</button>
+    </div>
+    <div>
+        <label for="asyncTaskExceptionsCount">Count</label>
+        <input type="number" id="asyncTaskExceptionsCount" value="100" />
+        <label for="asyncTaskExceptionsDoGc">Do GC</label>
+        <input type="checkbox" id="asyncTaskExceptionsDoGc" checked />
+        <button id="asyncTaskExceptionsButton">Async task exceptions</button>
+    </div>
+    <div>
+        <label for="autofacGeneratedFactoriesCount">Count</label>
+        <input type="number" id="autofacGeneratedFactoriesCount" value="100" />
+        <label for="autofacGeneratedFactoriesDoGc">Do GC</label>
+        <input type="checkbox" id="autofacGeneratedFactoriesDoGc" checked />
+        <button id="autofacGeneratedFactoriesButton">Autofac generated factories</button>
+    </div>
+    <div>
+        <label for="compiledFuncExpressionsCount">Count</label>
+        <input type="number" id="compiledFuncExpressionsCount" value="100" />
+        <label for="compiledFuncExpressionsDoGc">Do GC</label>
+        <input type="checkbox" id="compiledFuncExpressionsDoGc" checked />
+        <button id="compiledFuncExpressionsButton">Compiled func expressions</button>
+    </div>
+    <div>
+        <label for="eventsCount">Count</label>
+        <input type="number" id="eventsCount" value="100" />
+        <label for="eventsDoGc">Do GC</label>
+        <input type="checkbox" id="eventsDoGc" checked />
+        <button id="eventsButton">Events</button>
+    </div>
+    <div>
+        <label for="actionsCount">Count</label>
+        <input type="number" id="actionsCount" value="100" />
+        <label for="actionsDoGc">Do GC</label>
+        <input type="checkbox" id="actionsDoGc" checked />
+        <button id="actionsButton">Actions</button>
     </div>
 
     <!-- Load the dotnet.js file which needs to be located alongside the wasm files -->
