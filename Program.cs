@@ -87,7 +87,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"FS #{i} - start");
             var fileName = $"file_json_{i}.txt";
             if (!File.Exists(fileName))
             {
@@ -108,7 +107,7 @@ public static partial class Benchmarks
                 DoGC();
             }
             await Task.Delay(16);
-            PrintMemory($"FS #{i} - end");
+            PrintMemory($"FS #{i}");
         }
     }
 
@@ -117,14 +116,13 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"AS #{i} - start");
             var str = new string('a', random.Next(1000, 10_000));
             if (doGc)
             {
                 DoGC();
             }
             await Task.Delay(16);
-            PrintMemory($"AS #{i} - end");
+            PrintMemory($"AS #{i}");
         }
     }
 
@@ -134,8 +132,6 @@ public static partial class Benchmarks
         var losHolder = new List<byte[]>();
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"LF #{i} - start");
-
             for (int j = 0; j < batchSize; j++)
             {
                 losHolder.Add(new byte[size]);
@@ -143,7 +139,7 @@ public static partial class Benchmarks
             await Task.Delay(16);
             // Collect to recalculate fragmentation stats
             GC.Collect();
-            PrintMemory($"LF #{i} - end");
+            PrintMemory($"LF #{i}");
         }
     }
 
@@ -152,7 +148,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             // Start server in jsonserver folder to run this test
             var url = $"http://localhost:8090/{sizeMb}.json";
             var httpClient = new HttpClient();
@@ -165,7 +160,7 @@ public static partial class Benchmarks
                 DoGC();
             }
             await Task.Delay(16);
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
         }
     }
 
@@ -174,8 +169,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
-
             for (int j = 0; j < 10; j++)
             {
                 var obj = await GetGenericClass((i * 10 + j) % 10000 + 1);
@@ -186,7 +179,7 @@ public static partial class Benchmarks
                 }
             }
            
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
 
@@ -206,8 +199,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
-
             for (int j = 0; j < 10; j++)
             {
                 var obj = await GetGenericClass((i * 10 + j) % 10000 + 1);
@@ -218,7 +209,7 @@ public static partial class Benchmarks
                 }
             }
            
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
 
@@ -240,7 +231,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             for (int j = 0; j < 100; j++)
             {
                 try
@@ -254,7 +244,7 @@ public static partial class Benchmarks
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
     }
@@ -264,7 +254,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             for (int j = 0; j < 10; j++)
             {
                 await DoSomething().ContinueWith(t => t.Exception, TaskContinuationOptions.OnlyOnFaulted);
@@ -273,7 +262,7 @@ public static partial class Benchmarks
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
 
@@ -292,7 +281,6 @@ public static partial class Benchmarks
         var container = cb.Build();
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             var objs = new List<AutofacTestClass>();
             for (int j = 0; j < 100; j++)
             {
@@ -301,11 +289,38 @@ public static partial class Benchmarks
                 var testObj = obj(new object());
                 objs.Add(testObj);
             }
+            objs = null;
             if (doGc)
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
+            await Task.Delay(16);
+        }
+    }
+
+    
+    [JSExport]
+    public static async Task AutofacGeneratedFactoriesRegisterEachTime(int count, bool doGc)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            var objs = new List<AutofacTestClass>();
+            for (int j = 0; j < 100; j++)
+            {
+                var cb = new ContainerBuilder();
+                cb.RegisterType<AutofacTestClass>();
+                using var container = cb.Build();
+                var obj = container.Resolve<Func<object, AutofacTestClass>>();
+                var testObj = obj(new object());
+                objs.Add(testObj);
+            }
+            objs = null;
+            if (doGc)
+            {
+                DoGC();
+            }
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
     }
@@ -315,7 +330,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             var objects = new List<object>();
             for (int j = 0; j < 100; j++)
             {
@@ -328,7 +342,7 @@ public static partial class Benchmarks
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
     }
@@ -338,7 +352,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             for (int j = 0; j < 100; j++)
             {
                 var action1 = new Action(() => {});
@@ -353,7 +366,7 @@ public static partial class Benchmarks
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
     }
@@ -363,7 +376,6 @@ public static partial class Benchmarks
     {
         for (int i = 0; i < count; i++)
         {
-            PrintMemory($"#{i} - start");
             var actions = new List<Action>();
             for (int j = 0; j < 100; j++)
             {
@@ -376,7 +388,7 @@ public static partial class Benchmarks
             {
                 DoGC();
             }
-            PrintMemory($"#{i} - end");
+            PrintMemory($"#{i}");
             await Task.Delay(16);
         }
     }
@@ -453,13 +465,13 @@ public static partial class Benchmarks
         }
         if (bytes < 1024 * 1024)
         {
-            return $"{bytes / 1024.0:N2} KB";
+            return $"{bytes / 1024.0:N3} KB";
         }
         if (bytes < 1024 * 1024 * 1024)
         {
-            return $"{bytes / 1024.0 / 1024.0:N2} MB";
+            return $"{bytes / 1024.0 / 1024.0:N3} MB";
         }
-        return $"{bytes / 1024.0 / 1024.0 / 1024.0:N2} GB";
+        return $"{bytes / 1024.0 / 1024.0 / 1024.0:N3} GB";
     }
 }
 
@@ -474,6 +486,16 @@ public class AutofacTestClass
     public AutofacTestClass(object value)
     {
         _value = value;
+    }
+}
+
+public sealed class DecoratorFunc<TInterface>
+{
+    public readonly Func<IContainer, TInterface> Func;
+
+    public DecoratorFunc(Func<IContainer, TInterface> func)
+    {
+        Func = func;
     }
 }
 

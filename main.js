@@ -100,6 +100,12 @@ document.getElementById('autofacGeneratedFactoriesButton').addEventListener('cli
     exports.Benchmarks.AutofacGeneratedFactories(+count, doGc);
 });
 
+document.getElementById('autofacGeneratedFactoriesRegisterEachTimeButton').addEventListener('click', () => {
+    const count = document.getElementById('autofacGeneratedFactoriesRegisterEachTimeCount').value;
+    const doGc = document.getElementById('autofacGeneratedFactoriesRegisterEachTimeDoGc').checked;
+    exports.Benchmarks.AutofacGeneratedFactoriesRegisterEachTime(+count, doGc);
+});
+
 document.getElementById('compiledFuncExpressionsButton').addEventListener('click', () => {
     const count = document.getElementById('compiledFuncExpressionsCount').value;
     const doGc = document.getElementById('compiledFuncExpressionsDoGc').checked;
