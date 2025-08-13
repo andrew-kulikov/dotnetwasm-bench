@@ -1,6 +1,8 @@
 // Import required runtime
 import { dotnet } from './_framework/dotnet.js'
 
+Error.stackTraceLimit = 50;
+
 // Initialize the .NET runtime
 const { getAssemblyExports, getConfig, runMain, Module } = await dotnet
     .withDiagnosticTracing(false)

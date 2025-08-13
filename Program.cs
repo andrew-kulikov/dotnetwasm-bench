@@ -9,6 +9,7 @@ using Autofac;
 using System.Linq.Expressions;
 
 Console.WriteLine("Hello from dotnet");
+Console.WriteLine($"IsDynamicCodeSupported: {System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported}");
 
 public static partial class Benchmarks
 {
@@ -299,7 +300,6 @@ public static partial class Benchmarks
         }
     }
 
-    
     [JSExport]
     public static async Task AutofacGeneratedFactoriesRegisterEachTime(int count, bool doGc)
     {
@@ -486,16 +486,6 @@ public class AutofacTestClass
     public AutofacTestClass(object value)
     {
         _value = value;
-    }
-}
-
-public sealed class DecoratorFunc<TInterface>
-{
-    public readonly Func<IContainer, TInterface> Func;
-
-    public DecoratorFunc(Func<IContainer, TInterface> func)
-    {
-        Func = func;
     }
 }
 

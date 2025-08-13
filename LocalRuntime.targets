@@ -1,5 +1,9 @@
 <Project>
   <PropertyGroup>
+    <!-- Native symbols are not emitted by default in local build without this flag -->
+    <WasmNativeDebugSymbols>true</WasmNativeDebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup>
     <RuntimeSrcDir>C:\work\public_repos\runtime</RuntimeSrcDir>
   </PropertyGroup>
   <PropertyGroup>

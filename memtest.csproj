@@ -13,8 +13,17 @@
     <InvariantTimezone>true</InvariantTimezone>
   </PropertyGroup>
 
+  <!-- <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Linq.Expressions.CanEmitObjectArrayDelegate"
+                                    Value="false"
+                                    Trim="true" />
+  </ItemGroup> -->
+
   <PropertyGroup>
+    <DynamicCodeSupport>false</DynamicCodeSupport>
     <WasmNativeStrip>false</WasmNativeStrip>
+    <WasmBuildNative>true</WasmBuildNative>
+    <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
     <EmccFlags>$(EmccFlags); --memoryprofiler -s MALLOC=dlmalloc</EmccFlags>
   </PropertyGroup>
 
