@@ -9,8 +9,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <WasmEmitSourceMap>false</WasmEmitSourceMap>
-    <InvariantGlobalization>true</InvariantGlobalization>
-    <InvariantTimezone>true</InvariantTimezone>
+    <WasmBuildNative>true</WasmBuildNative>
   </PropertyGroup>
 
   <!-- <ItemGroup>
@@ -19,12 +18,21 @@
                                     Trim="true" />
   </ItemGroup> -->
 
-  <PropertyGroup>
-    <DynamicCodeSupport>false</DynamicCodeSupport>
+  <PropertyGroup Condition="'$(WasmMemoryProfiler)' == 'true'">
     <WasmNativeStrip>false</WasmNativeStrip>
-    <WasmBuildNative>true</WasmBuildNative>
     <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
     <EmccFlags>$(EmccFlags); --memoryprofiler -s MALLOC=dlmalloc</EmccFlags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- <DynamicCodeSupport>false</DynamicCodeSupport> -->
+    <!-- <WasmInitialHeapSize>629145600</WasmInitialHeapSize> -->
+    <!-- <WasmInitialHeapSize>838860800</WasmInitialHeapSize> -->
+    <WasmInitialHeapSize>943718400</WasmInitialHeapSize>
+    <!-- <WasmInitialHeapSize>1073741824</WasmInitialHeapSize> -->
+
+    <EmccFlags>$(EmccFlags) -s ALLOW_MEMORY_GROWTH=0</EmccFlags>
+    <EmccMaximumHeapSize>$(WasmInitialHeapSize)</EmccMaximumHeapSize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(aot)' == 'true'">
@@ -56,6 +64,8 @@
   <ItemGroup>
     <WasmExtraFilesToDeploy Include="index.html" />
     <WasmExtraFilesToDeploy Include="main.js" />
+    <WasmExtraFilesToDeploy Include="remote-logger.js" />
+    <WasmExtraFilesToDeploy Include="json_data/*.json" />
   </ItemGroup>
 
   <ItemGroup>

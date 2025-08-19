@@ -419,4 +419,4 @@ FodyWeavers.xsd
 
 # App specific files
 .venv
-jsonserver/*.json
+json_data/*.json

@@ -10,6 +10,9 @@
 <body>
     <h1>Memory Test</h1>
     <div>
+        Current memory: <span id="currentMemory"></span>
+    </div>
+    <div>
         <button id="doGcButton">Do GC</button>
     </div>
     <div>
@@ -110,6 +113,16 @@
         <label for="actionsDoGc">Do GC</label>
         <input type="checkbox" id="actionsDoGc" checked />
         <button id="actionsButton">Actions</button>
+    </div>
+    <div>
+        <label for="allocateMegabytes">Megabytes</label>
+        <input type="number" id="allocateMegabytes" value="10" />
+        <label for="allocateMegabytesFill">Fill</label>
+        <input type="checkbox" id="allocateMegabytesFill" checked />
+        <button id="allocateMegabytesButton">Allocate</button>
+    </div>
+    <div>
+        <button id="callAllGeneratedClassesButton">Call all generated classes</button>
     </div>
 
     <!-- Load the dotnet.js file which needs to be located alongside the wasm files -->

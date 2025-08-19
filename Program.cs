@@ -10,6 +10,13 @@ using System.Linq.Expressions;
 
 Console.WriteLine("Hello from dotnet");
 Console.WriteLine($"IsDynamicCodeSupported: {System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported}");
+Benchmarks.PrintMemory("Initial");
+
+public static partial class Interop
+{
+    [JSImport("globalThis.getTableSize")]
+    internal static partial int GetTableSize();
+}
 
 public static partial class Benchmarks
 {
@@ -145,12 +152,11 @@ public static partial class Benchmarks
     }
 
     [JSExport]
-    public static async Task RequestLargeJsonAsString(int count, int sizeMb, bool doGc)
+    public static async Task RequestLargeJsonAsString(string address, int count, int sizeMb, bool doGc)
     {
         for (int i = 0; i < count; i++)
         {
-            // Start server in jsonserver folder to run this test
-            var url = $"http://localhost:8090/{sizeMb}.json";
+            var url = $"{address.TrimEnd('/')}/{sizeMb}.json";
             var httpClient = new HttpClient();
             var response = await httpClient.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
@@ -191,6 +197,8 @@ public static partial class Benchmarks
             var testClassType = Assembly.GetExecutingAssembly().GetType($"TestClass{number}");
             var genericType = type.MakeGenericType(testClassType);
             var instance = Activator.CreateInstance(genericType);
+            var method = testClassType.GetMethod("Foo");
+            method.Invoke(Activator.CreateInstance(testClassType), null);
             return instance;
         }
     }
@@ -394,27 +402,64 @@ public static partial class Benchmarks
     }
 
     [JSExport]
+    public static void AllocateMegabytes(int megabytes, bool fill)
+    {
+        var bytes = megabytes * 1024 * 1024;
+        var ptr = Marshal.AllocHGlobal(bytes);
+        if (fill)
+        {
+            for (int i = 0; i < bytes; i++)
+            {
+                Marshal.WriteByte(ptr, i, (byte)random.Next(0, 255));
+            }
+        }
+    }
+
+    [JSExport]
+    public static async Task CallAllGeneratedClasses()
+    {
+        var caller = new TestClassCaller();
+        await caller.SumAll(PrintMemory);
+    }
+
+    [JSExport]
     public static void DoGC()
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
     }
 
-    private static void PrintMemory(string prefix)
+    [JSExport]
+    public static string GetCurrentMemory()
     {
         var stats = GetCurrentStatistics();
-        Console.WriteLine(
-            $"{prefix} "
-            + $"| WHS: {FormatBytes(stats.WasmHeapSize)} "
-            + $"| SBRK: {FormatBytes(stats.WasmSbrkPtr)} "
-            + $"| TM: {FormatBytes(stats.TotalMemory)} "
-            + $"| TAB: {FormatBytes(stats.TotalAllocatedBytes)} "
-            + $"| G0: {stats.Generation0Collections} "
-            + $"| G1: {stats.Generation1Collections} "
-            + $"| G2: {stats.Generation2Collections} "
-            + $"| HSB: {FormatBytes(stats.HeapSizeBytes)} "
-            + $"| FB: {FormatBytes(stats.FragmentedBytes)} "
-            + $"| TCB: {FormatBytes(stats.TotalCommittedBytes)}");
+        return GetMemoryInfoStr(stats, "");
+    }
+
+    public static void PrintMemory(string prefix)
+    {
+        var stats = GetCurrentStatistics();
+        Console.WriteLine(GetMemoryInfoStr(stats, prefix));
+    }
+
+    private static string GetMemoryInfoStr(GcStatistics stats, string prefix)
+    {
+        var sb = new StringBuilder();
+        if (!string.IsNullOrEmpty(prefix)) {
+            sb.Append(prefix);
+            sb.Append(" | ");
+        }
+        sb.Append($"WHS: {FormatBytes(stats.WasmHeapSize)} ");
+        sb.Append($"| SBRK: {FormatBytes(stats.WasmSbrkPtr)} ");
+        sb.Append($"| TM: {FormatBytes(stats.TotalMemory)} ");
+        sb.Append($"| TAB: {FormatBytes(stats.TotalAllocatedBytes)} ");
+        sb.Append($"| G0: {stats.Generation0Collections} ");
+        sb.Append($"| G1: {stats.Generation1Collections} ");
+        sb.Append($"| G2: {stats.Generation2Collections} ");
+        sb.Append($"| HSB: {FormatBytes(stats.HeapSizeBytes)} ");
+        sb.Append($"| FB: {FormatBytes(stats.FragmentedBytes)} ");
+        sb.Append($"| TCB: {FormatBytes(stats.TotalCommittedBytes)}");
+        return sb.ToString();
     }
 
     public static GcStatistics GetCurrentStatistics()

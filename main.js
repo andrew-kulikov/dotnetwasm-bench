@@ -1,5 +1,6 @@
 // Import required runtime
 import { dotnet } from './_framework/dotnet.js'
+import "./remote-logger.js";
 
 Error.stackTraceLimit = 50;
 
@@ -13,6 +14,15 @@ const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
 
 globalThis.Module = Module;
+
+globalThis.getTableSize = () => {
+    return Module.wasmExports["__indirect_function_table"].length;
+}
+
+setInterval(() => {
+    const memoryInfo = exports.Benchmarks.GetCurrentMemory();
+    document.getElementById('currentMemory').textContent = memoryInfo;
+}, 300);
 
 document.getElementById('lotOfObjectsButton').addEventListener('click', () => {
     exports.Benchmarks.LotOfObjects(1000, false);
@@ -58,11 +68,19 @@ document.getElementById('doGcButton').addEventListener('click', () => {
     exports.Benchmarks.DoGC();
 });
 
+document.getElementById('allocateMegabytesButton').addEventListener('click', () => {
+    const megabytes = document.getElementById('allocateMegabytes').value;
+    const fill = document.getElementById('allocateMegabytesFill').checked;
+    exports.Benchmarks.AllocateMegabytes(+megabytes, fill);
+});
+
 document.getElementById('largeJsonAsStringButton').addEventListener('click', () => {
+    // Current page address
+    const address = window.location.origin;
     const count = document.getElementById('largeJsonAsStringCount').value;
     const sizeMb = document.getElementById('largeJsonAsStringSizeMb').value;
     const doGc = document.getElementById('largeJsonAsStringDoGc').checked;
-    exports.Benchmarks.RequestLargeJsonAsString(+count, +sizeMb, doGc);
+    exports.Benchmarks.RequestLargeJsonAsString(address, +count, +sizeMb, doGc);
 });
 
 document.getElementById('losFragmentationButton').addEventListener('click', () => {
@@ -124,6 +142,10 @@ document.getElementById('actionsButton').addEventListener('click', () => {
     const count = document.getElementById('actionsCount').value;
     const doGc = document.getElementById('actionsDoGc').checked;
     exports.Benchmarks.Actions(+count, doGc);
+});
+
+document.getElementById('callAllGeneratedClassesButton').addEventListener('click', () => {
+    exports.Benchmarks.CallAllGeneratedClasses();
 });
 
 await runMain();
